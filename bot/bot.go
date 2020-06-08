@@ -13,15 +13,16 @@ var instagramURL = "https://www.instagram.com"
 
 // Bot holds all config to connect and make request to Instagram
 type Bot struct {
-	Username  string
-	Password  string
-	Profile   string
-	PostURLS  []*cdp.Node
-	PostPages []*PostPage
+	Username string
+	Password string
+	Profile  string
+	Webhook  string
+	PostURLS []*cdp.Node
+	Posts    []*Post
 }
 
-// PostPage holds the data when we are visiting a page
-type PostPage struct {
+// Post holds the data when we are visiting a page
+type Post struct {
 	URL    string
 	Images []string
 	Video  string
@@ -29,14 +30,15 @@ type PostPage struct {
 }
 
 // New returns a new instance of the Bot
-func New(username, password, profile string) *Bot {
+func New(username, password, profile, webhook string) *Bot {
 	var postURLS []*cdp.Node
-	var PostPages []*PostPage
+	var PostPages []*Post
 
 	return &Bot{
 		username,
 		password,
 		profile,
+		webhook,
 		postURLS,
 		PostPages,
 	}
@@ -94,12 +96,12 @@ func (b *Bot) GetPosts() ([]string, error) {
 	// 	images = append(images, image)
 	// }
 
-	for _, p := range b.PostPages {
+	for _, p := range b.Posts {
 		fmt.Printf("%+v\n", p.Images)
 		fmt.Println("")
 	}
 
-	for _, p := range b.PostPages {
+	for _, p := range b.Posts {
 		fmt.Printf("%+v\n", p.Video)
 		fmt.Println("")
 	}

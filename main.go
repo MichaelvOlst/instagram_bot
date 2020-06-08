@@ -1,31 +1,34 @@
 package main
 
 import (
-	"fmt"
-	"instagram_bot/bot"
-	"log"
+	"instagram_bot/server"
 )
 
 func main() {
-	done := make(chan bool)
 
-	b := bot.New(username, password, profilePage)
+	s := server.New()
 
-	go func(done chan bool) {
+	s.Start()
 
-		urls, err := b.GetPosts()
-		if err != nil {
-			log.Fatal(err)
-		}
+	// done := make(chan bool)
 
-		for _, result := range urls {
-			fmt.Println(result)
-			// fmt.Printf("Job id %d, input random no %d , sum of digits %d\n", result.job.id, result.job.randomno, result.sumofdigits)
-		}
+	// b := bot.New(username, password, profilePage)
 
-		done <- true
-	}(done)
+	// go func(done chan bool) {
 
-	<-done
+	// 	urls, err := b.GetPosts()
+	// 	if err != nil {
+	// 		log.Fatal(err)
+	// 	}
+
+	// 	for _, result := range urls {
+	// 		fmt.Println(result)
+	// 		// fmt.Printf("Job id %d, input random no %d , sum of digits %d\n", result.job.id, result.job.randomno, result.sumofdigits)
+	// 	}
+
+	// 	done <- true
+	// }(done)
+
+	// <-done
 
 }

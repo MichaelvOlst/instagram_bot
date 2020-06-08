@@ -13,7 +13,7 @@ import (
 
 func (b *Bot) goToPostDetail(ctx context.Context, url string) {
 
-	var p = &PostPage{}
+	var p = &Post{}
 	p.URL = url
 
 	err := chromedp.Run(ctx, b.getPostDetail(url, p))
@@ -56,11 +56,11 @@ func (b *Bot) goToPostDetail(ctx context.Context, url string) {
 
 	})
 
-	b.PostPages = append(b.PostPages, p)
+	b.Posts = append(b.Posts, p)
 
 }
 
-func (b *Bot) getPostDetail(url string, p *PostPage) chromedp.Tasks {
+func (b *Bot) getPostDetail(url string, p *Post) chromedp.Tasks {
 
 	fmt.Printf("Opening %s\n", url)
 
