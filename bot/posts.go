@@ -28,32 +28,27 @@ func (b *Bot) goToPostDetail(ctx context.Context, url string) {
 	}
 
 	doc.Find(`article img`).Each(func(i int, s *goquery.Selection) {
-		// For each item found, get the band and title
-		// band := s.Find("a").Text()
-		// title := s.Find("i").Text()
-		// fmt.Printf("Review %d: %s - %s\n", i, band, title)
-		image, found := s.Attr("srcset")
+		imageSrcSet, found := s.Attr("srcset")
 		if found {
-			p.Images = append(p.Images, image)
+			p.Images = getImagesFromSrcSet(imageSrcSet)
 		}
 
 	})
 
 	doc.Find(`article video`).Each(func(i int, s *goquery.Selection) {
-		// For each item found, get the band and title
-		// band := s.Find("a").Text()
-		// title := s.Find("i").Text()
-		// fmt.Printf("Review %d: %s - %s\n", i, band, title)
+
+		pv := &postVideo{}
 		image, found := s.Attr("poster")
 		if found {
-			p.Images = append(p.Images, image)
+			pv.ImageURL = image
 		}
 
 		videoURL, found := s.Attr("src")
 		if found {
-			p.Video = videoURL
+			pv.VideoURL = videoURL
 		}
 
+		p.Video = pv
 	})
 
 	b.Posts = append(b.Posts, p)
@@ -86,4 +81,31 @@ func (b *Bot) getPostDetail(url string, p *Post) chromedp.Tasks {
 		// chromedp.Sleep(time.Second * 3),
 	}
 
+}
+
+func getImagesFromSrcSet(srcSet string) *postImage {
+
+	pi := &postImage{}
+	images := strings.Split(srcSet, ",")
+
+	for _, img := range images {
+
+		splitted := strings.Split(img, " ")
+		first := splitted[0]
+		last := splitted[len(splitted)-1]
+
+		if last == "640w" {
+			pi.W640 = first
+		}
+
+		if last == "750w" {
+			pi.W750 = first
+		}
+
+		if last == "1080w" {
+			pi.W1080 = first
+		}
+	}
+
+	return pi
 }

@@ -23,29 +23,70 @@ type Bot struct {
 
 // Post holds the data when we are visiting a page
 type Post struct {
-	URL    string
-	Images []string
-	Video  string
-	HTML   string
+	URL    string     `json:"url"`
+	HTML   string     `json:"-"`
+	Images *postImage `json:"images"`
+	Video  *postVideo `json:"video"`
+}
+
+type postImage struct {
+	W640  string `json:"w640"`
+	W750  string `json:"w750"`
+	W1080 string `json:"w1080"`
+}
+
+type postVideo struct {
+	ImageURL string `json:"image_url"`
+	VideoURL string `json:"video_url"`
+}
+
+// InstagramRequest holds the data when an user request the data via the API call
+type InstagramRequest struct {
+	WebhookURL string `json:"webhook_url"`
+	Username   string `json:"username"`
+	Password   string `json:"password"`
+	Profile    string `json:"profile"`
+}
+
+// InstagramResult holds the crawled data
+type InstagramResult struct {
+	Profile  string  `json:"profile"`
+	Username string  `json:"username"`
+	Webhook  string  `json:"webhook_url"`
+	Posts    []*Post `json:"posts"`
 }
 
 // New returns a new instance of the Bot
-func New(username, password, profile, webhook string) *Bot {
+func New(r *InstagramRequest) *Bot {
 	var postURLS []*cdp.Node
-	var PostPages []*Post
+	var Posts []*Post
 
 	return &Bot{
-		username,
-		password,
-		profile,
-		webhook,
+		r.Username,
+		r.Password,
+		r.Profile,
+		r.WebhookURL,
 		postURLS,
-		PostPages,
+		Posts,
 	}
 }
 
+// Run will start the crawling process
+func (b *Bot) Run() {
+	w := &WebhookResponse{}
+
+	result, err := b.GetPosts()
+	if err != nil {
+		w.Error = err
+		b.makeRequest(w)
+	}
+
+	w.Response = result
+	b.makeRequest(w)
+}
+
 // GetPosts gets all the urls from instagram page
-func (b *Bot) GetPosts() ([]string, error) {
+func (b *Bot) GetPosts() (*InstagramResult, error) {
 
 	opts := append(chromedp.DefaultExecAllocatorOptions[:], chromedp.Flag("headless", false))
 	actx, cancel := chromedp.NewExecAllocator(context.Background(), opts...)
@@ -67,69 +108,19 @@ func (b *Bot) GetPosts() ([]string, error) {
 		urls = append(urls, url)
 	}
 
-	// var wg sync.WaitGroup
 	i := 0
 	for _, url := range urls {
-		// wg.Add(1)
-
-		// go func(wg *sync.WaitGroup, url string) {
-		// 	defer wg.Done()
-
 		b.goToPostDetail(ctx, url)
-		// }(&wg, url)
-
 		if i == 2 {
 			break
 		}
 		i++
 	}
 
-	// wg.Wait()
-
-	// var images []string
-	// for _, v := range b.postDetailImages {
-	// 	image := fmt.Sprintf("%s", v.AttributeValue("srcset"))
-
-	// 	// splitted := strings.Split(image, ",")
-
-	// 	// images = append(images, splitted...)
-	// 	images = append(images, image)
-	// }
-
-	for _, p := range b.Posts {
-		fmt.Printf("%+v\n", p.Images)
-		fmt.Println("")
-	}
-
-	for _, p := range b.Posts {
-		fmt.Printf("%+v\n", p.Video)
-		fmt.Println("")
-	}
-
-	// fmt.Printf(b.html)
-
-	return urls, nil
+	return &InstagramResult{
+		b.Profile,
+		b.Username,
+		b.Webhook,
+		b.Posts,
+	}, nil
 }
-
-// chromedp.Sleep(time.Second * 2),
-// chromedp.ActionFunc(func(ctx context.Context) error {
-// 	_, exp, err := runtime.Evaluate(`window.scrollTo(0, document.querySelector("footer").offsetTop);`).Do(ctx)
-// 	if err != nil {
-// 		return err
-// 	}
-// 	if exp != nil {
-// 		return exp
-// 	}
-// 	return nil
-// }),
-// chromedp.Sleep(time.Second * 3),
-// chromedp.ActionFunc(func(ctx context.Context) error {
-// 	_, exp, err := runtime.Evaluate(`window.scrollTo(0, document.querySelector("footer").offsetTop);`).Do(ctx)
-// 	if err != nil {
-// 		return err
-// 	}
-// 	if exp != nil {
-// 		return exp
-// 	}
-// 	return nil
-// }),

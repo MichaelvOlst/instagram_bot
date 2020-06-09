@@ -1,6 +1,12 @@
 package server
 
-import "github.com/gofiber/fiber"
+import (
+	"encoding/json"
+	"instagram_bot/bot"
+	"io/ioutil"
+
+	"github.com/gofiber/fiber"
+)
 
 // Server holds the fiber instance
 type Server struct {
@@ -14,6 +20,23 @@ func New() *Server {
 	s := &Server{app}
 
 	s.setupAPIRoutes()
+
+	s.app.Post("/webhook", func(c *fiber.Ctx) {
+		r := new(bot.WebhookResponse)
+		// Parse body into struct
+		if err := c.BodyParser(r); err != nil {
+			c.Status(400).Send(err)
+			return
+		}
+
+		bytes, _ := json.Marshal(r)
+		err := ioutil.WriteFile("test.json", bytes, 0777)
+
+		if err != nil {
+			c.Status(400).Send(err)
+			return
+		}
+	})
 
 	return s
 }
