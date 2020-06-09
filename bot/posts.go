@@ -27,12 +27,23 @@ func (b *Bot) goToPostDetail(ctx context.Context, url string) {
 		log.Fatal(err)
 	}
 
+	doc.Find("body script").Each(func(i int, s *goquery.Selection) {
+
+		if strings.Contains(s.Text(), "graphql") {
+
+			jsonData := s.Text()[strings.Index(s.Text(), "{") : len(s.Text())-1]
+			fmt.Println(jsonData)
+
+		}
+	})
+
+	// jsonData := e.Text[strings.Index(e.p, "{") : len(e.Text)-1]
+
 	doc.Find(`article img`).Each(func(i int, s *goquery.Selection) {
 		imageSrcSet, found := s.Attr("srcset")
 		if found {
 			p.Images = getImagesFromSrcSet(imageSrcSet)
 		}
-
 	})
 
 	doc.Find(`article video`).Each(func(i int, s *goquery.Selection) {
@@ -61,24 +72,8 @@ func (b *Bot) getPostDetail(url string, p *Post) chromedp.Tasks {
 
 	return chromedp.Tasks{
 		chromedp.Navigate(url),
-		// chromedp.ActionFunc(func(ctx context.Context) error {
-		// 	_, exp, err := runtime.Evaluate(`window.scrollTo(0,document.body.scrollHeight);`).Do(ctx)
-		// 	if err != nil {
-		// 		return err
-		// 	}
-		// 	if exp != nil {
-		// 		return exp
-		// 	}
-		// 	return nil
-		// }),
-
 		chromedp.Sleep(time.Second * 2),
-		chromedp.OuterHTML("#react-root", &p.HTML),
-		// chromedp.Nodes(`img[srcset]`, &b.postDetailImages),
-		// chromedp.Nodes(`video[poster]`, &b.postDetailImages),
-		// chromedp.Text(`(//*`, &b.html),
-
-		// chromedp.Sleep(time.Second * 3),
+		chromedp.OuterHTML("body", &p.HTML),
 	}
 
 }
