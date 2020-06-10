@@ -28,6 +28,7 @@ func New(cfg *config.Config) *Server {
 		},
 	}
 	s.app.Use(basicauth.New(basicAuthCfg))
+	s.app.Use(s.authMiddleware())
 
 	s.setupAPIRoutes()
 
