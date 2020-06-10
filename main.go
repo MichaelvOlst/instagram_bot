@@ -1,12 +1,21 @@
 package main
 
 import (
+	"fmt"
+	"instagram_bot/config"
 	"instagram_bot/server"
+	"path/filepath"
 )
 
 func main() {
 
-	s := server.New()
+	envFile, _ := filepath.Abs(".env")
+
+	cfg := config.Parse(envFile)
+
+	fmt.Printf("%+v\n", cfg)
+
+	s := server.New(cfg)
 
 	s.Start()
 

@@ -2,6 +2,7 @@ package bot
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 	"log"
 	"strings"
@@ -28,38 +29,30 @@ func (b *Bot) goToPostDetail(ctx context.Context, url string) {
 	}
 
 	doc.Find("body script").Each(func(i int, s *goquery.Selection) {
+		t := s.Text()
+		if strings.Contains(t, "graphql") && strings.Contains(t, "GraphVideo") {
+			jsonData := t[strings.Index(t, "{") : len(t)-2]
 
-		if strings.Contains(s.Text(), "graphql") {
+			videoData := &graphqlVideoData{}
+			err := json.Unmarshal([]byte(jsonData), videoData)
+			if err != nil {
+				log.Fatal(err)
+			}
 
-			jsonData := s.Text()[strings.Index(s.Text(), "{") : len(s.Text())-1]
-			fmt.Println(jsonData)
-
-		}
-	})
-
-	// jsonData := e.Text[strings.Index(e.p, "{") : len(e.Text)-1]
-
-	doc.Find(`article img`).Each(func(i int, s *goquery.Selection) {
-		imageSrcSet, found := s.Attr("srcset")
-		if found {
-			p.Images = getImagesFromSrcSet(imageSrcSet)
-		}
-	})
-
-	doc.Find(`article video`).Each(func(i int, s *goquery.Selection) {
-
-		pv := &postVideo{}
-		image, found := s.Attr("poster")
-		if found {
-			pv.ImageURL = image
+			p.VideoData = videoData
 		}
 
-		videoURL, found := s.Attr("src")
-		if found {
-			pv.VideoURL = videoURL
-		}
+		if strings.Contains(t, "graphql") && strings.Contains(t, "GraphImage") {
+			jsonData := t[strings.Index(t, "{") : len(t)-2]
 
-		p.Video = pv
+			imageData := &graphqlImageData{}
+			err := json.Unmarshal([]byte(jsonData), imageData)
+			if err != nil {
+				log.Fatal(err)
+			}
+
+			p.ImageData = imageData
+		}
 	})
 
 	b.Posts = append(b.Posts, p)
@@ -76,31 +69,4 @@ func (b *Bot) getPostDetail(url string, p *Post) chromedp.Tasks {
 		chromedp.OuterHTML("body", &p.HTML),
 	}
 
-}
-
-func getImagesFromSrcSet(srcSet string) *postImage {
-
-	pi := &postImage{}
-	images := strings.Split(srcSet, ",")
-
-	for _, img := range images {
-
-		splitted := strings.Split(img, " ")
-		first := splitted[0]
-		last := splitted[len(splitted)-1]
-
-		if last == "640w" {
-			pi.W640 = first
-		}
-
-		if last == "750w" {
-			pi.W750 = first
-		}
-
-		if last == "1080w" {
-			pi.W1080 = first
-		}
-	}
-
-	return pi
 }

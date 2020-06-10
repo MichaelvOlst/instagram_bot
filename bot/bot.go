@@ -23,24 +23,10 @@ type Bot struct {
 
 // Post holds the data when we are visiting a page
 type Post struct {
-	URL         string     `json:"url"`
-	HTML        string     `json:"-"`
-	Images      *postImage `json:"images"`
-	Video       *postVideo `json:"video"`
-	Description string     `json:"description"`
-}
-
-type postImage struct {
-	W640  string `json:"w640"`
-	W750  string `json:"w750"`
-	W1080 string `json:"w1080"`
-}
-
-type postVideo struct {
-	ImageURL string `json:"image_url"`
-	VideoURL string `json:"video_url"`
-	Views    int    `json:"views"`
-	Comments int    `json:"comments"`
+	URL       string            `json:"url"`
+	HTML      string            `json:"-"`
+	VideoData *graphqlVideoData `json:"video_data"`
+	ImageData *graphqlImageData `json:"image_data"`
 }
 
 // InstagramRequest holds the data when an user request the data via the API call
