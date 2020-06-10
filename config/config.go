@@ -3,6 +3,7 @@ package config
 import (
 	"log"
 	"os"
+	"path/filepath"
 
 	"github.com/joho/godotenv"
 	"github.com/kelseyhightower/envconfig"
@@ -16,6 +17,10 @@ type Config struct {
 	Server struct {
 		Host string `default:"localhost"`
 		Port string `default:"3000"`
+	}
+	Admin struct {
+		Email    string `default:""`
+		Password string `default:""`
 	}
 }
 
@@ -38,6 +43,8 @@ func Parse(envFile string) *Config {
 	if err != nil {
 		log.Fatalf("Error parsing configuration from environment: %s", err)
 	}
+
+	cfg.Database.Name, _ = filepath.Abs(cfg.Database.Name)
 
 	return &cfg
 }

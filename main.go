@@ -3,19 +3,26 @@ package main
 import (
 	"fmt"
 	"instagram_bot/config"
+	"instagram_bot/database"
 	"instagram_bot/server"
+	"log"
 	"path/filepath"
 )
 
 func main() {
 
 	envFile, _ := filepath.Abs(".env")
-
 	cfg := config.Parse(envFile)
+
+	db, err := database.New(cfg)
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer db.Close()
 
 	fmt.Printf("%+v\n", cfg)
 
-	s := server.New(cfg)
+	s := server.New(cfg, db)
 
 	s.Start()
 

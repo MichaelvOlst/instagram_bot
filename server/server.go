@@ -4,9 +4,9 @@ import (
 	"encoding/json"
 	"instagram_bot/bot"
 	"instagram_bot/config"
+	"instagram_bot/database"
 	"io/ioutil"
 
-	"github.com/gofiber/basicauth"
 	"github.com/gofiber/fiber"
 )
 
@@ -14,20 +14,21 @@ import (
 type Server struct {
 	app *fiber.App
 	cfg *config.Config
+	db  *database.Database
 }
 
 // New will return a new Server instance and wraps all the routess
-func New(cfg *config.Config) *Server {
+func New(cfg *config.Config, db *database.Database) *Server {
 	app := fiber.New()
 
-	s := &Server{app, cfg}
+	s := &Server{app, cfg, db}
 
-	basicAuthCfg := basicauth.Config{
-		Users: map[string]string{
-			"admin": "123456",
-		},
-	}
-	s.app.Use(basicauth.New(basicAuthCfg))
+	// basicAuthCfg := basicauth.Config{
+	// 	Users: map[string]string{
+	// 		"admin": "123456",
+	// 	},
+	// }
+	// s.app.Use(basicauth.New(basicAuthCfg))
 	s.app.Use(s.authMiddleware())
 
 	s.setupAPIRoutes()
