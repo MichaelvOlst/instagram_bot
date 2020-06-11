@@ -3,25 +3,24 @@ package server
 import (
 	"encoding/json"
 	"instagram_bot/bot"
-	"instagram_bot/config"
 	"instagram_bot/database"
 	"io/ioutil"
 
 	"github.com/gofiber/fiber"
+	"github.com/spf13/viper"
 )
 
 // Server holds the fiber instance
 type Server struct {
 	app *fiber.App
-	cfg *config.Config
 	db  *database.Database
 }
 
 // New will return a new Server instance and wraps all the routess
-func New(cfg *config.Config, db *database.Database) *Server {
+func New(db *database.Database) *Server {
 	app := fiber.New()
 
-	s := &Server{app, cfg, db}
+	s := &Server{app, db}
 
 	// basicAuthCfg := basicauth.Config{
 	// 	Users: map[string]string{
@@ -55,5 +54,5 @@ func New(cfg *config.Config, db *database.Database) *Server {
 
 // Start will listen to the api requests
 func (s *Server) Start() {
-	s.app.Listen(s.cfg.Server.Port)
+	s.app.Listen(viper.Get("server_port"))
 }

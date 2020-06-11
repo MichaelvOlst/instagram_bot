@@ -3,11 +3,11 @@ package database
 import (
 	"database/sql"
 	"fmt"
-	"instagram_bot/config"
 	"log"
 
 	"github.com/jmoiron/sqlx"
 	_ "github.com/mattn/go-sqlite3" //sqlite3 driver
+	"github.com/spf13/viper"
 )
 
 // Database holds the connection
@@ -16,23 +16,16 @@ type Database struct {
 }
 
 // New open and migrating the database
-func New(cfg *config.Config) (*Database, error) {
+func New() (*Database, error) {
 
-	conn, err := sqlx.Connect("sqlite3", cfg.Database.Name)
+	// TODO check if file exists for migrating
+
+	conn, err := sqlx.Connect("sqlite3", viper.Get("database_file").(string))
 	if err != nil {
 		return nil, err
 	}
 
-	db := &Database{conn}
-
-	db.migrate()
-
-	err = db.createAdminUser(cfg)
-	if err != nil {
-		return nil, err
-	}
-
-	return db, nil
+	return &Database{conn}, nil
 }
 
 // Close the db pool
