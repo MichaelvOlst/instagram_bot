@@ -2,8 +2,10 @@ package database
 
 import (
 	"database/sql"
+	"errors"
 	"fmt"
 	"log"
+	"os"
 
 	"github.com/jmoiron/sqlx"
 	_ "github.com/mattn/go-sqlite3" //sqlite3 driver
@@ -17,20 +19,16 @@ type Database struct {
 
 // New open and migrating the database
 func New() (*Database, error) {
+	if _, err := os.Stat(viper.GetString("database_file")); os.IsNotExist(err) {
+		return nil, errors.New("Database doesn't exists make sure you migrate the database first\n")
+	}
 
-	// TODO check if file exists for migrating
-
-	conn, err := sqlx.Connect("sqlite3", viper.Get("database_file").(string))
+	conn, err := sqlx.Connect("sqlite3", viper.GetString("database_file"))
 	if err != nil {
 		return nil, err
 	}
 
 	return &Database{conn}, nil
-}
-
-// Close the db pool
-func (db *Database) Close() error {
-	return db.Close()
 }
 
 func (db *Database) rowExists(query string, args ...interface{}) bool {

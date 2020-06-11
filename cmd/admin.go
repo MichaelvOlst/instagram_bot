@@ -2,8 +2,16 @@ package cmd
 
 import (
 	"fmt"
+	"instagram_bot/database"
+	"instagram_bot/models"
+	"log"
 
 	"github.com/spf13/cobra"
+)
+
+var (
+	email    string
+	password string
 )
 
 // adminCmd represents the admin command
@@ -11,20 +19,29 @@ var adminCmd = &cobra.Command{
 	Use:   "admin",
 	Short: "This will create an admin user",
 	Run: func(cmd *cobra.Command, args []string) {
-		fmt.Println("admin called")
+
+		u := models.NewUser(email, password)
+
+		db, err := database.New()
+		if err != nil {
+			log.Fatal(err)
+		}
+		err = db.CreateUser(&u)
+		if err != nil {
+			log.Fatal(err)
+		}
+
+		fmt.Printf("Created admin %s\n", email)
+
 	},
 }
 
 func init() {
 	rootCmd.AddCommand(adminCmd)
 
-	// Here you will define your flags and configuration settings.
+	adminCmd.PersistentFlags().StringVar(&email, "email", "", "Email address")
+	adminCmd.PersistentFlags().StringVar(&password, "password", "", "Password")
 
-	// Cobra supports Persistent Flags which will work for this command
-	// and all subcommands, e.g.:
-	// adminCmd.PersistentFlags().String("foo", "", "A help for foo")
-
-	// Cobra supports local flags which will only run when this command
-	// is called directly, e.g.:
-	// adminCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
+	adminCmd.MarkFlagRequired("email")
+	adminCmd.MarkFlagRequired("password")
 }
