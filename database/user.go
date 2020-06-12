@@ -13,3 +13,15 @@ func (db *Database) CreateUser(u *models.User) error {
 
 	return nil
 }
+
+// DeleteUserByEmail deletes an user by Email
+func (db *Database) DeleteUserByEmail(u *models.User) error {
+
+	var query = `DELETE FROM users WHERE email = ?;`
+	_, err := db.Exec(query, u.Email)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}

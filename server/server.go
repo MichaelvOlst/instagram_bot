@@ -16,6 +16,11 @@ type Server struct {
 	db  *database.Database
 }
 
+type response struct {
+	Data  interface{} `json:",omitempty"`
+	Error interface{} `json:",omitempty"`
+}
+
 // New will return a new Server instance and wraps all the routess
 func New(db *database.Database) *Server {
 	app := fiber.New()

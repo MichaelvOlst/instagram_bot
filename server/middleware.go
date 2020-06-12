@@ -1,6 +1,8 @@
 package server
 
 import (
+	"net/http"
+
 	"github.com/gofiber/fiber"
 )
 
@@ -8,16 +10,13 @@ import (
 func (s *Server) authMiddleware() fiber.Handler {
 	return func(ctx *fiber.Ctx) {
 
-		// defer func() {
-		// 	if r := recover(); r != nil {
-		// 		err, ok := r.(error)
-		// 		if !ok {
-		// 			err = fmt.Errorf("%v", r)
-		// 		}
-		// 		ctx.Next(err)
-		// 		return
-		// 	}
-		// }()
+		_, err := s.db.CheckToken(ctx.Get("api_token"))
+		if err != nil {
+			ctx.JSON(response{Error: err.Error()})
+			ctx.Status(http.StatusUnauthorized)
+			return
+		}
+
 		ctx.Next()
 	}
 }
