@@ -1,6 +1,7 @@
 package server
 
 import (
+	"encoding/base64"
 	"instagram_bot/bot"
 
 	"github.com/gofiber/fiber"
@@ -13,11 +14,25 @@ func (s *Server) setupAPIRoutes() {
 	api.Post("/instagram/posts", func(c *fiber.Ctx) {
 
 		r := new(bot.InstagramRequest)
-		// Parse body into struct
 		if err := c.BodyParser(r); err != nil {
 			c.Status(400).Send(err)
 			return
 		}
+
+		username, err := base64.StdEncoding.DecodeString(r.Username)
+		if err != nil {
+			c.Status(400).Send(err)
+			return
+		}
+
+		password, err := base64.StdEncoding.DecodeString(r.Password)
+		if err != nil {
+			c.Status(400).Send(err)
+			return
+		}
+
+		r.Username = string(username)
+		r.Password = string(password)
 
 		go func() {
 			b := bot.New(r)
