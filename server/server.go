@@ -35,7 +35,7 @@ func New(db *database.Database) *Server {
 	// s.app.Use(basicauth.New(basicAuthCfg))
 	s.app.Use(s.authMiddleware())
 
-	s.setupAPIRoutes()
+	s.apiRoutes()
 
 	s.app.Post("/webhook", func(c *fiber.Ctx) {
 		r := new(bot.WebhookResponse)
