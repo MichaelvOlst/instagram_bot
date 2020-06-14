@@ -46,3 +46,20 @@ func (db *Database) GetUserByID(ID int64) (*models.User, error) {
 
 	return u, nil
 }
+
+// GetUserByEmail get a user by ID
+func (db *Database) GetUserByEmail(email string) (*models.User, error) {
+
+	u := &models.User{}
+	query := db.Rebind("SELECT * FROM users WHERE email = ?")
+	err := db.Get(u, query, email)
+	if err != nil {
+		if err == sql.ErrNoRows {
+			return nil, errors.New("User not found")
+		}
+
+		return nil, err
+	}
+
+	return u, nil
+}

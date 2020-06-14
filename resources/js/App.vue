@@ -1,15 +1,9 @@
 <template>
   <div>
 
-    {{ loggedIn }}
+    <Dashboard v-if="getUser"/>
 
-    {{ getUser }}
-
-    <Dashboard v-if="loggedIn"/>
-    <Login v-else />
-
-    <Nav/>
-    <!-- <router-view></router-view> -->
+    <Login v-if="!getUser" />
 
   </div>
 </template>
@@ -17,7 +11,6 @@
 <script>
 
 import { mapGetters, mapActions } from 'vuex'
-
 
 import Dashboard from './components/Dashboard'
 import Login from './components/Login'
@@ -30,13 +23,12 @@ export default {
     this.checkLogin()
   },
   computed: {
-    ...mapGetters('user', {
-      loggedIn: 'loggedIn',
+    ...mapGetters('auth', {
       getUser: 'getUser',
     })
   },
   methods: {
-    ...mapActions('user', [
+    ...mapActions('auth', [
       'checkLogin'
     ]),
   }

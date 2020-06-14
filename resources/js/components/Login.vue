@@ -1,12 +1,11 @@
 <template>   
      <section class="hero is-light is-fullheight">
-         {{form }}
         <div class="hero-body">
           <div class="container">
             <div class="columns is-centered">
               <div class="column is-5-tablet is-4-desktop is-3-widescreen">
                
-                <form action="" class="box">
+                <form action="" method="post" class="box" @submit.prevent="login()">
                     <h3 class="title has-text-centered">Login</h3>
                     <hr/>
                     <div class="field">
@@ -20,8 +19,10 @@
                         </div>
                     </div>
                     <div class="field">
-                        <button class="button is-success">Login</button>
+                        <button type="submit" class="button is-success">Login</button>
                     </div>
+
+                    <p>{{ error }}</p>
                 </form>
               </div>
             </div>
@@ -31,6 +32,7 @@
 </template>
 
 <script>
+
 export default {
     name: 'App',
     data() {
@@ -38,8 +40,18 @@ export default {
             form: {
                 email: "",
                 password: ""
-            }
+            },
+            error: null
         }
     },
+    methods: {
+        async login() {
+            try {
+                await this.$store.dispatch('auth/login', this.form)
+            } catch(e) {
+                this.error = e
+            }
+        },
+    }
 }
 </script>

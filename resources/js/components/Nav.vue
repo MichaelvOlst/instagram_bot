@@ -7,10 +7,35 @@
             <div id="navbarMenu" class="navbar-menu">
                 <div class="navbar-end">
                     <a class="navbar-item is-active">Dashboard</a>
-                    <a class="navbar-item">Logout</a>
+                    <a class="navbar-item" @click.prevent="logout()">Logout</a>
                 </div>
             </div>
         </div>
     </nav>
 </template>
+
+
+<script>
+import { mapGetters } from 'vuex'
+
+export default {
+    name: 'Nav',
+   
+    methods: {
+        async logout() {
+            try {
+                await this.$store.dispatch('auth/logout')
+            } catch(e) {
+                console.log(e)
+            }
+        },
+    },
+     computed: {
+        ...mapGetters('auth', {
+        getUser: 'getUser',
+        })
+    },
+}
+</script>
+
 
