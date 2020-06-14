@@ -7,39 +7,35 @@ import (
 	"io/ioutil"
 
 	"github.com/gofiber/fiber"
+	"github.com/gofiber/session"
 	"github.com/spf13/viper"
 )
 
 // Server holds the fiber instance
 type Server struct {
-	app *fiber.App
-	db  *database.Database
+	app     *fiber.App
+	db      *database.Database
+	session *session.Session
 }
 
 type response struct {
-	Data  interface{} `json:",omitempty"`
-	Error interface{} `json:",omitempty"`
+	Data  interface{} `json:"data,omitempty"`
+	Error interface{} `json:"error,omitempty"`
 }
 
 // New will return a new Server instance and wraps all the routess
 func New(db *database.Database) *Server {
 	app := fiber.New()
+	session := session.New()
 
-	s := &Server{app, db}
-
-	// basicAuthCfg := basicauth.Config{
-	// 	Users: map[string]string{
-	// 		"admin": "123456",
-	// 	},
-	// }
-	// s.app.Use(basicauth.New(basicAuthCfg))
-	s.app.Use(s.authMiddleware())
+	s := &Server{app, db, session}
 
 	s.apiRoutes()
+	s.authRoutes()
+	s.frontRoutes()
 
 	s.app.Post("/webhook", func(c *fiber.Ctx) {
 		r := new(bot.WebhookResponse)
-		// Parse body into struct
 		if err := c.BodyParser(r); err != nil {
 			c.Status(400).Send(err)
 			return
@@ -60,4 +56,10 @@ func New(db *database.Database) *Server {
 // Start will listen to the api requests
 func (s *Server) Start() {
 	s.app.Listen(viper.Get("server_port"))
+}
+
+func respond(c *fiber.Ctx, res response) {
+	if err := c.JSON(res); err != nil {
+		c.Status(500).Send(err)
+	}
 }

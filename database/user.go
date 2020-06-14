@@ -1,6 +1,10 @@
 package database
 
-import "instagram_bot/models"
+import (
+	"database/sql"
+	"errors"
+	"instagram_bot/models"
+)
 
 // CreateUser creates the user in the database
 func (db *Database) CreateUser(u *models.User) error {
@@ -24,4 +28,21 @@ func (db *Database) DeleteUserByEmail(u *models.User) error {
 	}
 
 	return nil
+}
+
+// GetUserByID get a user by ID
+func (db *Database) GetUserByID(ID int64) (*models.User, error) {
+
+	u := &models.User{}
+	query := db.Rebind("SELECT * FROM users WHERE id = ?")
+	err := db.Get(u, query, ID)
+	if err != nil {
+		if err == sql.ErrNoRows {
+			return nil, errors.New("User not found")
+		}
+
+		return nil, err
+	}
+
+	return u, nil
 }

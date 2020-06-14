@@ -10,6 +10,7 @@ import (
 func (s *Server) apiRoutes() {
 
 	api := s.app.Group("/api")
+	api.Use(s.apiMiddleware())
 
 	api.Post("/instagram/posts", func(c *fiber.Ctx) {
 
