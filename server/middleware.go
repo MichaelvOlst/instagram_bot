@@ -1,6 +1,7 @@
 package server
 
 import (
+	"fmt"
 	"net/http"
 
 	"github.com/gofiber/fiber"
@@ -22,34 +23,29 @@ func (s *Server) apiMiddleware() fiber.Handler {
 	}
 }
 
-// // authMiddleware
-// func (s *Server) authMiddleware() fiber.Handler {
-// 	return func(ctx *fiber.Ctx) {
+// authMiddleware
+func (s *Server) authMiddleware() fiber.Handler {
 
-// 		store := s.session.Get(ctx) // get/create new session
-// 		defer store.Save()
+	return func(ctx *fiber.Ctx) {
 
-// 		authID := store.Get("auth_id")
+		store := s.session.Get(ctx)
+		defer store.Save()
 
-// 		if authID == nil {
-// 			ctx.Redirect("/login")
-// 			return
-// 		}
+		authID := store.Get("auth_id")
 
-// 		u, err := s.db.GetUserByID(authID.(int64))
-// 		if err != nil {
-// 			fmt.Println(err)
-// 		}
-// 		fmt.Println(u)
+		fmt.Println(authID)
 
-// 		// token := ctx.Get("api_token")
-// 		// _, err := s.db.CheckToken(token)
-// 		// if err != nil {
-// 		// 	ctx.JSON(response{Error: err.Error()})
-// 		// 	ctx.Status(http.StatusUnauthorized)
-// 		// 	return
-// 		// }
+		if authID == nil {
+			ctx.Status(401)
+			return
+		}
 
-// 		ctx.Next()
-// 	}
-// }
+		_, err := s.db.GetUserByID(authID.(int64))
+		if err != nil {
+			ctx.Status(401)
+			return
+		}
+
+		ctx.Next()
+	}
+}

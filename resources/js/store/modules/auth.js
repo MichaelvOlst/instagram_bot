@@ -16,9 +16,7 @@ const actions = {
       method: 'POST',
     })
     .then(response => response.json())
-    .then(res => {
-      console.log(res.data)
-      
+    .then(res => {     
       commit('setUser', res.data)
     })
     .catch(error => {

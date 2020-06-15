@@ -16,12 +16,10 @@ func (l *login) Sanitize() {
 }
 
 func (s *Server) authRoutes() {
-
-	auth := s.app.Group("/auth")
-	auth.Post("/check", s.checkLogin)
-	auth.Post("/login", s.login)
-	auth.Post("/logout", s.logout)
-
+	g := s.app.Group("/auth")
+	g.Post("/check", s.checkLogin)
+	g.Post("/login", s.login)
+	g.Post("/logout", s.logout)
 }
 
 func (s *Server) checkLogin(c *fiber.Ctx) {

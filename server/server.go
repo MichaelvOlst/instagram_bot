@@ -30,9 +30,10 @@ func New(db *database.Database) *Server {
 
 	s := &Server{app, db, session}
 
-	s.apiRoutes()
 	s.authRoutes()
+	s.userRoutes()
 	s.frontRoutes()
+	s.apiRoutes()
 
 	s.app.Post("/webhook", func(c *fiber.Ctx) {
 		r := new(bot.WebhookResponse)

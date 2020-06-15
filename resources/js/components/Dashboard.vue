@@ -1,18 +1,27 @@
 <template>
   <div>
-    <Nav/>
-    <div class="container">
-        <!-- <router-view></router-view> -->
-    </div>
+    <Header/>
+    <main>
+      <div class="container">
+        <div class="columns">
+          <div class="column is-2">
+            <Sidebar/>
+          </div>
+          <div class="column"><router-view></router-view></div>
+        </div>
+      </div>
+    </main>
   </div>
 </template>
 
 <script>
-import Nav from './Nav'
+import Header from './Header'
+import Sidebar from './Sidebar'
+
 export default {
   name: 'Dashboard',
   components: {
-    Nav
+    Header, Sidebar
   },
 
   data() {
@@ -24,12 +33,9 @@ export default {
 </script>
 
 <style>
-#app {
-  font-family: 'Avenir', Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-align: center;
-  color: #2c3e50;
-  margin-top: 60px;
-}
+  main {
+    /* background: #eee; */
+    padding-top: 3em;
+    min-height: 100vh;
+  }
 </style>
