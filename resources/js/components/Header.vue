@@ -1,11 +1,11 @@
 <template>   
-    <nav class="navbar">
+
+    <nav class="navbar navbar-dark bg-dark">
         <div class="container">
-            <div class="navbar-brand">
-                <a class="navbar-item" href="/"><i class="fab fa-instagram"></i>&nbsp;Instagram Bot</a>
-            </div>
+            <a class="navbar-brand" href="/"><i class="fab fa-instagram"></i>&nbsp;Instagram Bot</a>
         </div>
     </nav>
+   
 </template>
 
 <style>

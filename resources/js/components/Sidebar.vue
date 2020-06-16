@@ -1,15 +1,19 @@
 <template>
-    <aside class="menu">
-        <ul class="menu-list">
-            <li>
+    <div class="menu">
+        <ul class="nav nav-pills flex-column">
+            <li class="nav-item">
                 <router-link :to="{name: 'users'}" v-slot="{ isActive }">
-                    <a :class="{'is-active':isActive}">Users</a>
+                    <a class="nav-link" :class="{'active': isActive}">Users</a>
                 </router-link>
             </li>
-            <li><a>API tokens</a></li>
-            <li><a @click.prevent="logout()">Logout</a></li>
+            <li class="nav-item">
+                <a class="nav-link" href="#">API tokens</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" @click.prevent="logout()" href="#">Logout</a>
+            </li>
         </ul>
-    </aside>
+    </div>
 </template>
 
 <script>
@@ -29,15 +33,15 @@ export default {
     },
      computed: {
         ...mapGetters('auth', {
-        getUser: 'getUser',
+            getUser: 'getUser',
         })
     },
 }
 </script>
 
 
-<style>
-    aside {
+<style scoped>
+    .menu {
         border-right: 1px solid #d8d6d6;
         min-height: 100vh;
         padding-right: 2em;

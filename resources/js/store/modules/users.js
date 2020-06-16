@@ -1,6 +1,6 @@
 
 const state = () => ({
-    users: null,
+    users: [],
     error: null
   })
   
@@ -16,6 +16,23 @@ const state = () => ({
       fetch("/api/users")
       .then(response => response.json())
       .then(res => {     
+        commit('setUsers', res.data)
+      })
+      .catch(error => {
+        commit('setError', error)
+      });
+    },
+
+    addUser ({ commit }, data) {
+      fetch("/api/users", {
+        method: 'POST',
+        body: JSON.stringify(data),
+        headers: {
+          'Content-Type': 'application/json'
+        },
+      })
+      .then(response => response.json())
+      .then(res => {
         commit('setUsers', res.data)
       })
       .catch(error => {

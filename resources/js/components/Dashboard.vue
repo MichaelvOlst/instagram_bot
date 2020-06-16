@@ -3,11 +3,13 @@
     <Header/>
     <main>
       <div class="container">
-        <div class="columns">
-          <div class="column is-2">
-            <Sidebar/>
+        <div class="row">
+          <div class="col-2">
+             <Sidebar/>
           </div>
-          <div class="column"><router-view></router-view></div>
+          <div class="col-10">
+            <router-view></router-view>
+          </div>
         </div>
       </div>
     </main>

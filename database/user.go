@@ -63,3 +63,17 @@ func (db *Database) GetUserByEmail(email string) (*models.User, error) {
 
 	return u, nil
 }
+
+// GetUsers gets all users from the database
+func (db *Database) GetUsers() ([]*models.User, error) {
+	results := []*models.User{}
+	query := db.Rebind(`SELECT * FROM users`)
+	err := db.Select(&results, query)
+
+	// don't err on no rows
+	if err == sql.ErrNoRows {
+		return results, nil
+	}
+
+	return results, err
+}
